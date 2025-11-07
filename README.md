@@ -1,1 +1,3 @@
 # SemEval-2025 Task 11: Bridging the Gap in Text-Based Emotion Detection
+
+Encoder-based BERT + Decoder-based models + Prompt Optimization + Ensembling
