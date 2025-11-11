@@ -2,3 +2,4 @@ venv/
 notebooks/enc_emotions/
 **/.DS_Store
 **/checkpoint-*/
+enc_emotions/

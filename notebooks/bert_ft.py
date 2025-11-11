@@ -15,11 +15,11 @@ from transformers import (
 )
 from torch.utils.data import DataLoader
 
-EMOTIONS = ["anger","fear","joy","sadness","surprise"]
+EMOTIONS = ["anger","disgust","fear","joy","sadness","surprise"]
 MODEL_NAME = "xlm-roberta-base"
 MAX_LENGTH = 256
 SEED = 42
-LANGS = ["eng", "rus", "esp"]
+LANGS = ["eng", "rus", "esp", "all"]
 BASE_DIR = Path.cwd()
 DATA_DIR = BASE_DIR / "dataset"
 OUT_ROOT = BASE_DIR / "enc_emotions"
@@ -95,7 +95,7 @@ def main():
             fp16=False, bf16=False,
             dataloader_pin_memory=False,
             remove_unused_columns=False,
-            evaluation_strategy="epoch",
+            eval_strategy="epoch",
             save_strategy="epoch",
             load_best_model_at_end=True,
             metric_for_best_model="macro_f1",
@@ -139,10 +139,10 @@ def main():
         best_t = []
         for j in range(len(EMOTIONS)):
             ts = np.linspace(0.05, 0.95, 37)
-            f1s = [f1_score(dev_true[:, j], (dev_probs[:, j] >= t).astype(int)) for t in ts]
+            f1s = [f1_score(dev_true[:, j], (dev_probs[:, j] >= t).astype(int), zero_division=0) for t in ts]
             best_t.append(float(ts[int(np.argmax(f1s))]))
 
-        macro_tuned = f1_score(dev_true, (dev_probs >= np.array(best_t)).astype(int), average="macro")
+        macro_tuned = f1_score(dev_true, (dev_probs >= np.array(best_t)).astype(int), average="macro", zero_division=0)
         print(f"[{lang}] Best thresholds:", dict(zip(EMOTIONS, best_t)), "dev macro-F1:", macro_tuned)
 
         # save thresholds
