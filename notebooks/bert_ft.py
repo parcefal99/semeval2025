@@ -19,9 +19,9 @@ EMOTIONS = ["anger","disgust","fear","joy","sadness","surprise"]
 MODEL_NAME = "xlm-roberta-base"
 MAX_LENGTH = 256
 SEED = 42
-LANGS = ["eng", "rus", "esp", "deu", "all"]
+LANGS = ["rus", "esp", "deu", "all"]
 BASE_DIR = Path.cwd()
-DATA_DIR = BASE_DIR / "dataset/Part_A"
+DATA_DIR = BASE_DIR / "dataset"
 OUT_ROOT = BASE_DIR / "enc_emotions"
 os.makedirs(OUT_ROOT, exist_ok=True)
 
@@ -52,12 +52,14 @@ def load_dataset(lang):
     test_csv = DATA_DIR / f"{lang}_test.csv"
 
     train_df = pd.read_csv(train_csv)
-    dev_df   = pd.read_csv(dev_csv)
+    dev_df = pd.read_csv(dev_csv)
+    test_df = pd.read_csv(test_csv)
 
     hf_train = df_to_hf(train_df).map(tokenize, batched=True, remove_columns=["text"]+EMOTIONS)
     hf_dev = df_to_hf(dev_df).map(tokenize, batched=True, remove_columns=["text"]+EMOTIONS)
+    hf_test = df_to_hf(test_df).map(tokenize, batched=True, remove_columns=["text"]+EMOTIONS)
 
-    return train_df, dev_df, hf_train, hf_dev
+    return train_df, dev_df, test_df, hf_train, hf_dev, hf_test
 
 
 def main():
@@ -68,7 +70,7 @@ def main():
     for lang in LANGS:
         out_dir = OUT_ROOT / lang
         os.makedirs(out_dir, exist_ok=True)
-        train_df, dev_df, hf_train, hf_dev = load_dataset(lang)
+        train_df, dev_df, test_df, hf_train, hf_dev, hf_test = load_dataset(lang)
 
         model = AutoModelForSequenceClassification.from_pretrained(
             MODEL_NAME,
@@ -148,6 +150,37 @@ def main():
         # save thresholds
         with open(out_dir / "thresholds.json","w",encoding="utf-8") as f:
             json.dump(dict(zip(EMOTIONS, best_t)), f, indent=2)
+        
+        # TESTING
+        test_logits = trainer.predict(hf_test).predictions
+        if test_logits.ndim == 3:
+            test_logits = test_logits.squeeze(1)
+        test_probs = 1/(1+np.exp(-test_logits))
+        test_probs = np.nan_to_num(test_probs, nan=0.0, posinf=1.0, neginf=0.0)
+
+        thr = np.array(best_t)
+        test_preds = (test_probs >= thr).astype(int)
+
+        id_col = "id" if "id" in test_df.columns else None
+        if id_col is None:
+            test_ids = [f"{lang}_test_{i:05d}" for i in range(len(test_df))]
+        else:
+            test_ids = test_df[id_col].tolist()
+
+        preds_df = pd.DataFrame({
+            "id": test_ids,
+            **{emo: test_preds[:, i] for i, emo in enumerate(EMOTIONS)}
+        })
+        probs_df = pd.DataFrame({
+            "id": test_ids,
+            **{f"{emo}_prob": test_probs[:, i] for i, emo in enumerate(EMOTIONS)}
+        })
+
+        preds_df.to_csv(out_dir / "test_preds.csv", index=False)
+        probs_df.to_csv(out_dir / "test_probs.csv", index=False)
+
+        print(f"[{lang}] wrote:", out_dir / "test_preds.csv")
+        print(f"[{lang}] wrote:", out_dir / "test_probs.csv")
 
 if __name__ == "__main__":
     main()
