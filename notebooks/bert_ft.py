@@ -21,7 +21,7 @@ MAX_LENGTH = 256
 SEED = 42
 LANGS = ["eng", "rus", "esp", "deu", "all"]
 BASE_DIR = Path.cwd()
-DATA_DIR = BASE_DIR / "dataset"
+DATA_DIR = BASE_DIR / "dataset/Part_A"
 OUT_ROOT = BASE_DIR / "enc_emotions"
 os.makedirs(OUT_ROOT, exist_ok=True)
 

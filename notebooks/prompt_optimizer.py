@@ -32,9 +32,9 @@ Text: "Not only was I not able to move, I smacked my head against the guy sittin
 → {"anger":{"y":1,"i":1},"fear":{"y":1,"i":1},"joy":{"y":0,"i":0},"sadness":{"y":0,"i":0},"surprise":{"y":0,"i":0}}
 """
 
-PROMPTS = [
-    BASE_SYSTEM_PROMPT,
-    BASE_SYSTEM_PROMPT + FEW_SHOT_PROMPT,
-    BASE_SYSTEM_PROMPT + COT_PROMPT,
-    BASE_SYSTEM_PROMPT + COT_PROMPT + FEW_SHOT_PROMPT,
-]
+PROMPTS = {
+    "BASE_SYSTEM_PROMPT": BASE_SYSTEM_PROMPT,
+    "FEW_SHOT_PROMPT": BASE_SYSTEM_PROMPT + FEW_SHOT_PROMPT,
+    "COT_PROMPT": BASE_SYSTEM_PROMPT + COT_PROMPT,
+    "COMBINED_PROMPT": BASE_SYSTEM_PROMPT + COT_PROMPT + FEW_SHOT_PROMPT,
+}
