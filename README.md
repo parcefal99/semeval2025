@@ -6,14 +6,24 @@ We provide a utility script to generate basic distribution reports over the data
 To compute dataset statistics, run:
 
 ```bash
-python scripts/dataset_stat.py
+python notebooks/dataset_stat.py
 ```
 
-Paths and Configuration
-Edit the configuration in your training script to match your local environment:
+### Fine tuning and path configuration
+Edit the configuration in your training script to match your local environment in ```lora_ft.py ``` file:
 
-MODEL_PATH   = "/l/users/abzal.nurgazy/models/llama32_3b"
-DATASET_PATH = "/home/abzal.nurgazy/semeval2025/dataset"
-TRAIN_PATH = "esp_train.csv"
-DEV_PATH   = "esp_dev.csv"
+1. **Model Directory** (`MODEL_PATH`)
+   - Location: `/l/users/abzal.nurgazy/models/llama32_3b`
+2. **Dataset Directory** (`DATASET_PATH`)
+   - Location: `/home/abzal.nurgazy/semeval2025/dataset`
+3. **Training File** (`TRAIN_PATH`)
+   - Filename: `esp_train.csv` (Switch to `rus_train.csv` or `deu_train.csv` as needed)
+4. **Validation File** (`DEV_PATH`)
+   - Filename: `esp_dev.csv`
 
+### Testing fine-tuned models 
+
+To test the fine-tuned models, run:
+```bash
+python notebooks/test_all.py
+```
