@@ -9,6 +9,15 @@ To compute dataset statistics, run:
 python notebooks/dataset_stat.py
 ```
 
+### XLM-RoBERTa training
+To run the whole baseline XLM-RoBERTa pipeline (training + per label threshold tuning + evaluation) simply run:
+
+```bash
+python notebooks/bert_ft.py
+```
+
+The trained model can be found here: https://huggingface.co/yltyadi/multilabel-emotion-detection-bert
+
 ### Fine tuning and path configuration
 Edit the configuration in your training script to match your local environment in ```lora_ft.py ``` file:
 
