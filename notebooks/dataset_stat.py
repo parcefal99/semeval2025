@@ -3,13 +3,11 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
 
-# --- CONFIGURATION ---
+
 DATASET_PATH = "/home/abzal.nurgazy/semeval2025/dataset"
 OUTPUT_IMAGE = "split_distribution_by_language.png"
 LABELS = ["anger", "disgust", "fear", "joy", "sadness", "surprise"]
 
-# Define the exact filenames for each split per language
-# Ensure these match your actual file names!
 LANG_CONFIG = {
     "Russian": {
         "Train": "rus_train.csv",
@@ -29,7 +27,7 @@ LANG_CONFIG = {
 }
 
 def analyze_splits_per_language():
-    # Store all data to plot later
+    
     all_data = []
 
     print(f"{'Lang':<8} | {'Split':<6} | {'Emotion':<10} | {'Count':<5} | {'%':<5}")
@@ -47,13 +45,11 @@ def analyze_splits_per_language():
                 df = pd.read_csv(file_path)
                 total = len(df)
                 
-                # Count emotions
                 counts = df[LABELS].sum()
                 
                 for label, count in counts.items():
                     pct = (count / total) * 100
                     
-                    # Print stats
                     print(f"{lang:<8} | {split_name:<6} | {label:<10} | {count:<5} | {pct:.1f}%")
                     
                     all_data.append({
@@ -66,11 +62,9 @@ def analyze_splits_per_language():
             except Exception as e:
                 print(f"Error reading {filename}: {e}")
 
-    # --- PLOTTING ---
     if all_data:
         df_plot = pd.DataFrame(all_data)
         
-        # Create 1 row, 3 columns (one chart per language)
         fig, axes = plt.subplots(1, 3, figsize=(20, 6), sharey=True)
         sns.set_theme(style="whitegrid")
 
@@ -84,13 +78,12 @@ def analyze_splits_per_language():
                 ax.set_title(f"{lang} (No Data)")
                 continue
 
-            # Plot Grouped Bar Chart for this Language
             sns.barplot(
                 data=lang_data,
                 x="Emotion",
                 y="Percentage",
                 hue="Split",
-                palette="viridis", # Colors for Train/Dev/Test
+                palette="viridis", 
                 ax=ax
             )
             
@@ -99,9 +92,8 @@ def analyze_splits_per_language():
             if i == 0:
                 ax.set_ylabel("Percentage of Split (%)")
             else:
-                ax.set_ylabel("") # Hide Y label for inner plots
+                ax.set_ylabel("") 
             
-            # Add value labels
             for container in ax.containers:
                 ax.bar_label(container, fmt='%.0f', padding=2, fontsize=8)
 
