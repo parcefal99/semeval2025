@@ -36,3 +36,6 @@ To test the fine-tuned models, run:
 ```bash
 python notebooks/test_all.py
 ```
+
+Fine-tuned adapters can be found with link: 
+1. https://huggingface.co/parcefal99/semeval25-task11-adapters/tree/main
